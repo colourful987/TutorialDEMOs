@@ -95,7 +95,7 @@
     CGContextSaveGState(context);
     CGContextAddPath(context, outerPath);
     CGContextClip(context);
-    [self drawLinearGradient:context rect:outerRect startColor:outerTop endColor:outerBottom];
+    [self drawGlossAndGradient:context rect:outerRect startColor:outerTop endColor:outerBottom];
     CGContextRestoreGState(context);
     
     UIColor *innerTop = [UIColor colorWithHue:_hue saturation:_saturation brightness:actualBrightness * 0.9 alpha:1.0];
