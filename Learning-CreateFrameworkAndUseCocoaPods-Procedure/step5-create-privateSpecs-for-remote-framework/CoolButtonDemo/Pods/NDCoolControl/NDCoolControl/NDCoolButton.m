@@ -77,9 +77,11 @@
     CGFloat outerMarign = 5.f;
     CGRect outerRect = CGRectInset(rect, outerMarign, outerMarign);
     
+    // ================== 外圈 ==================
     CGPathRef outerPath = [self createRoundedRectPath:outerRect radius:6.0];
     
     if (self.state != UIControlStateHighlighted) {
+        // 在normal状态下才绘制阴影
         CGContextSaveGState(context);
         CGContextSetFillColorWithColor(context, outerColor.CGColor);
         CGContextSetShadowWithColor(context, CGSizeMake(0, 2), 3.0, shadowColor.CGColor);
@@ -87,6 +89,7 @@
         CGContextFillPath(context);
         CGContextRestoreGState(context);
     }
+    // ==========================================
     
     // 路径描边 渐变色
     UIColor *outerTop = [UIColor colorWithHue:_hue saturation:_saturation brightness:actualBrightness alpha:1.0];
@@ -95,7 +98,8 @@
     CGContextSaveGState(context);
     CGContextAddPath(context, outerPath);
     CGContextClip(context);
-    [self drawLinearGradient:context rect:outerRect startColor:outerTop endColor:outerBottom];
+    // 绘制外圈的一次渐变图
+    [self drawGlossAndGradient:context rect:outerRect startColor:outerTop endColor:outerBottom];
     CGContextRestoreGState(context);
     
     UIColor *innerTop = [UIColor colorWithHue:_hue saturation:_saturation brightness:actualBrightness * 0.9 alpha:1.0];
@@ -108,6 +112,7 @@
     CGContextSaveGState(context);
     CGContextAddPath(context, innerPath);
     CGContextClip(context);
+    // 绘制内圈的一次渐变图
     [self drawGlossAndGradient:context rect:innerRect startColor:innerTop endColor:innerBottom];
     CGContextRestoreGState(context);
 }
