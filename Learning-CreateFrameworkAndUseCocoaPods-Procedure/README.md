@@ -53,6 +53,8 @@ In fact , import oc framework into our oc project, default use `#use_frameworks`
 
 ## Step4 : cocoapod for remote framework
 
+without issues
+
 ## Step5 : create  private Specs for remote framework
 
 

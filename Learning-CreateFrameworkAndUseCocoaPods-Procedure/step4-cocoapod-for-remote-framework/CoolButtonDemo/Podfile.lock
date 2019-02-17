@@ -1,0 +1,21 @@
+PODS:
+  - NDCoolControl (0.0.1)
+
+DEPENDENCIES:
+  - NDCoolControl (from `https://github.com/colourful987/NDCoolControl`)
+
+EXTERNAL SOURCES:
+  NDCoolControl:
+    :git: https://github.com/colourful987/NDCoolControl
+
+CHECKOUT OPTIONS:
+  NDCoolControl:
+    :commit: 9af4394dfe47a01997e1f29506168646f2788219
+    :git: https://github.com/colourful987/NDCoolControl
+
+SPEC CHECKSUMS:
+  NDCoolControl: b64a367cabedc24049bd144e27e7c1f1e6b96b1e
+
+PODFILE CHECKSUM: eb317c67409bf13417f3f9cb2e0b643cc30332b0
+
+COCOAPODS: 1.6.0

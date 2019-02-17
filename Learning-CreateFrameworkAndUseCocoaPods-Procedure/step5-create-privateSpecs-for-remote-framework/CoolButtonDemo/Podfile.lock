@@ -1,0 +1,16 @@
+PODS:
+  - NDCoolControl (0.0.2)
+
+DEPENDENCIES:
+  - NDCoolControl (~> 0.0.2)
+
+SPEC REPOS:
+  https://github.com/colourful987/RWPodSpecs.git:
+    - NDCoolControl
+
+SPEC CHECKSUMS:
+  NDCoolControl: 66b1351bd9a558fb2c3917d264911d1fbedca58e
+
+PODFILE CHECKSUM: 3f90731332a3a199d8e138716f72851bb439362e
+
+COCOAPODS: 1.6.0

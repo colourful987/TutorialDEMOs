@@ -1,0 +1,22 @@
+{
+  "name": "NDCoolControl",
+  "version": "0.0.1",
+  "summary": "NDCoolControl contains all cool controls.",
+  "description": "This is an cool UIKit",
+  "homepage": "https://github.com/colourful987",
+  "license": "MIT",
+  "authors": {
+    "colourful987": "mcxcode@163.com"
+  },
+  "source": {
+    "git": "https://github.com/colourful987/NDCoolControl",
+    "tag": "0.0.1"
+  },
+  "source_files": "NDCoolControl",
+  "platforms": {
+    "osx": null,
+    "ios": null,
+    "tvos": null,
+    "watchos": null
+  }
+}
