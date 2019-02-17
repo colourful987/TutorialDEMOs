@@ -27,6 +27,30 @@ Select `NDCoolButton.h` file , find target membership setting, change private to
 
 ## Step3 : cocoapod for local framework
 
+In step3, I occurred a problem. It report "can not find .h file" again....
+
+I found the  `Profile`  file use wrong configuration:
+
+```
+target 'CoolButtonDemo' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  use_frameworks! # I forget it
+  pod 'NDCoolControl', :path => '../NDCoolControl'
+end
+
+```
+
+when to use `use_frameworks!` :
+
+1. Use CocoaPods import swift framework into your project
+2. Use dynamic frameworks
+```
+use_frameworks! -> dynamic frameworks -> .framework
+#use_frameworks! -> static libraries -> .a
+```
+
+In fact , import oc framework into our oc project, default use `#use_frameworks` ...
+
 ## Step4 : cocoapod for remote framework
 
 ## Step5 : create  private Specs for remote framework

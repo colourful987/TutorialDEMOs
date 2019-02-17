@@ -1,0 +1,627 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03549EC21227D6728822FAAB94C9E259 /* UIView+PathCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = A2BC2C92D2F8739CA0D010FE51116EF5 /* UIView+PathCreator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0F6D72385742892C5C59E44F09E4D232 /* NDCoolButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C28767ACDABB10B0A25D6B1A469F367B /* NDCoolButton.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		10C24B1C2B9AD1D9D5EC07773520F4AC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB4607EFCA7C5F75397649E792E2AFCB /* Foundation.framework */; };
+		131F4DF5373D674E0EE3EE133DB68AB0 /* UIView+PathCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B10227771482D70A8C2ACA93CB9F926 /* UIView+PathCreator.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		3DF317A5DE9508E29A7EE29E0A24864B /* NDCoolControl.h in Headers */ = {isa = PBXBuildFile; fileRef = CFBD9E43C8A6437D3D81270985CEA42F /* NDCoolControl.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4049528124BDEA264559B7491550D293 /* NDCoolControl-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 023921F64B125B86C7F9EDD3E3A00319 /* NDCoolControl-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		77118B16D3FF72C871539B1BF313109A /* NDCoolButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F09F51EB4AF93FB11EA6197AD9623AAB /* NDCoolButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7E1E64CAE550451DE0D71383D6BF81A0 /* NDCoolControl-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6C003374D5F4009346B9A9375C5BC9 /* NDCoolControl-dummy.m */; };
+		B9C6D8CCAB8604918374FE490F364547 /* Pods-CoolButtonDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B6141EFB2CF7970FD25D5D5E3478110 /* Pods-CoolButtonDemo-dummy.m */; };
+		C61943062598A277127EE7767F2DE140 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB4607EFCA7C5F75397649E792E2AFCB /* Foundation.framework */; };
+		E2D319BEF1C95B42E2F4E9083890C044 /* Pods-CoolButtonDemo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E72EE0A488D9184CCF7AE94F69A81679 /* Pods-CoolButtonDemo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		02399337A6BE08AC4E05749EDE840F14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A667A5A1B5A2047B96BA76B2B21331DE;
+			remoteInfo = NDCoolControl;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		023921F64B125B86C7F9EDD3E3A00319 /* NDCoolControl-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NDCoolControl-umbrella.h"; sourceTree = "<group>"; };
+		1038519A5C52BFA4B672D3768ECD9CC8 /* NDCoolControl.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = NDCoolControl.modulemap; sourceTree = "<group>"; };
+		16E6EE2E1D5A6108ADAB4B53FC33DDCC /* NDCoolControl.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = NDCoolControl.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		1D39241572E02FE247EA2346AEC07DFF /* Pods-CoolButtonDemo-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CoolButtonDemo-frameworks.sh"; sourceTree = "<group>"; };
+		2B1CF16EC40F98DDA02E5E9890575F60 /* Pods_CoolButtonDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_CoolButtonDemo.framework; path = "Pods-CoolButtonDemo.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E8502DCEBC2CF61A19FA588B9D89F2C /* Pods-CoolButtonDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CoolButtonDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		5C6C003374D5F4009346B9A9375C5BC9 /* NDCoolControl-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "NDCoolControl-dummy.m"; sourceTree = "<group>"; };
+		749064D9C132D95B2FA95E6C2D7C2AEE /* Pods-CoolButtonDemo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-CoolButtonDemo-acknowledgements.plist"; sourceTree = "<group>"; };
+		7B10227771482D70A8C2ACA93CB9F926 /* UIView+PathCreator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+PathCreator.m"; path = "NDCoolControl/UIView+PathCreator.m"; sourceTree = "<group>"; };
+		7B6141EFB2CF7970FD25D5D5E3478110 /* Pods-CoolButtonDemo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-CoolButtonDemo-dummy.m"; sourceTree = "<group>"; };
+		85BFF7CC9511AABA59EC7E19C2401E96 /* NDCoolControl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = NDCoolControl.framework; path = NDCoolControl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8C426CA731DA94661CB5AFDB21BC1D8D /* Pods-CoolButtonDemo.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-CoolButtonDemo.modulemap"; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A2BC2C92D2F8739CA0D010FE51116EF5 /* UIView+PathCreator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+PathCreator.h"; path = "NDCoolControl/UIView+PathCreator.h"; sourceTree = "<group>"; };
+		A9355B6C669E5EAC5547B2A9597AFBEC /* NDCoolControl-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "NDCoolControl-Info.plist"; sourceTree = "<group>"; };
+		AA2BEF85B1F8DD93833C0A1A375949B9 /* Pods-CoolButtonDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CoolButtonDemo.release.xcconfig"; sourceTree = "<group>"; };
+		B0028DA00D400FAD2D1C862349EDFD80 /* NDCoolControl-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NDCoolControl-prefix.pch"; sourceTree = "<group>"; };
+		B47CA68539EB445D919157B2D6959375 /* NDCoolControl.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = NDCoolControl.xcconfig; sourceTree = "<group>"; };
+		C28767ACDABB10B0A25D6B1A469F367B /* NDCoolButton.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NDCoolButton.m; path = NDCoolControl/NDCoolButton.m; sourceTree = "<group>"; };
+		CB4607EFCA7C5F75397649E792E2AFCB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		CFBD9E43C8A6437D3D81270985CEA42F /* NDCoolControl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NDCoolControl.h; path = NDCoolControl/NDCoolControl.h; sourceTree = "<group>"; };
+		E039DDC9CDE03290BAEEC5039EECA007 /* Pods-CoolButtonDemo-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-CoolButtonDemo-Info.plist"; sourceTree = "<group>"; };
+		E72EE0A488D9184CCF7AE94F69A81679 /* Pods-CoolButtonDemo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-CoolButtonDemo-umbrella.h"; sourceTree = "<group>"; };
+		E81B47300EBB78949010160EF09B7C5A /* Pods-CoolButtonDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-CoolButtonDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
+		F09F51EB4AF93FB11EA6197AD9623AAB /* NDCoolButton.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NDCoolButton.h; path = NDCoolControl/NDCoolButton.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		45D988FF4756CC2952B98C31A22517C3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C61943062598A277127EE7767F2DE140 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D4D76BB506258535CBB9ECA1FC7392F8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10C24B1C2B9AD1D9D5EC07773520F4AC /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		32D2E5538EBC2C2A76608371B9D31273 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				811D313F59E069DA4C58F0C1B3EA9653 /* NDCoolControl */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		8041A9AB4204AFBE783C4FA0365F4800 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				16E6EE2E1D5A6108ADAB4B53FC33DDCC /* NDCoolControl.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		811D313F59E069DA4C58F0C1B3EA9653 /* NDCoolControl */ = {
+			isa = PBXGroup;
+			children = (
+				F09F51EB4AF93FB11EA6197AD9623AAB /* NDCoolButton.h */,
+				C28767ACDABB10B0A25D6B1A469F367B /* NDCoolButton.m */,
+				CFBD9E43C8A6437D3D81270985CEA42F /* NDCoolControl.h */,
+				A2BC2C92D2F8739CA0D010FE51116EF5 /* UIView+PathCreator.h */,
+				7B10227771482D70A8C2ACA93CB9F926 /* UIView+PathCreator.m */,
+				8041A9AB4204AFBE783C4FA0365F4800 /* Pod */,
+				DE2EEC01DB70D1F2A2FAA17DAA212A48 /* Support Files */,
+			);
+			name = NDCoolControl;
+			path = ../../NDCoolControl;
+			sourceTree = "<group>";
+		};
+		9AA5D953861059BF74320211BE9EC4B3 /* Pods-CoolButtonDemo */ = {
+			isa = PBXGroup;
+			children = (
+				8C426CA731DA94661CB5AFDB21BC1D8D /* Pods-CoolButtonDemo.modulemap */,
+				E81B47300EBB78949010160EF09B7C5A /* Pods-CoolButtonDemo-acknowledgements.markdown */,
+				749064D9C132D95B2FA95E6C2D7C2AEE /* Pods-CoolButtonDemo-acknowledgements.plist */,
+				7B6141EFB2CF7970FD25D5D5E3478110 /* Pods-CoolButtonDemo-dummy.m */,
+				1D39241572E02FE247EA2346AEC07DFF /* Pods-CoolButtonDemo-frameworks.sh */,
+				E039DDC9CDE03290BAEEC5039EECA007 /* Pods-CoolButtonDemo-Info.plist */,
+				E72EE0A488D9184CCF7AE94F69A81679 /* Pods-CoolButtonDemo-umbrella.h */,
+				2E8502DCEBC2CF61A19FA588B9D89F2C /* Pods-CoolButtonDemo.debug.xcconfig */,
+				AA2BEF85B1F8DD93833C0A1A375949B9 /* Pods-CoolButtonDemo.release.xcconfig */,
+			);
+			name = "Pods-CoolButtonDemo";
+			path = "Target Support Files/Pods-CoolButtonDemo";
+			sourceTree = "<group>";
+		};
+		9B055D0CFEA43187E72B03DED11F5662 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CB4607EFCA7C5F75397649E792E2AFCB /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		C392572DB1EB1C0DB9A284FA067F4187 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				9AA5D953861059BF74320211BE9EC4B3 /* Pods-CoolButtonDemo */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		CF1408CF629C7361332E53B88F7BD30C = {
+			isa = PBXGroup;
+			children = (
+				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
+				32D2E5538EBC2C2A76608371B9D31273 /* Development Pods */,
+				D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */,
+				E56CC1E5A512642850E1A127EC8A6246 /* Products */,
+				C392572DB1EB1C0DB9A284FA067F4187 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9B055D0CFEA43187E72B03DED11F5662 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DE2EEC01DB70D1F2A2FAA17DAA212A48 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1038519A5C52BFA4B672D3768ECD9CC8 /* NDCoolControl.modulemap */,
+				B47CA68539EB445D919157B2D6959375 /* NDCoolControl.xcconfig */,
+				5C6C003374D5F4009346B9A9375C5BC9 /* NDCoolControl-dummy.m */,
+				A9355B6C669E5EAC5547B2A9597AFBEC /* NDCoolControl-Info.plist */,
+				B0028DA00D400FAD2D1C862349EDFD80 /* NDCoolControl-prefix.pch */,
+				023921F64B125B86C7F9EDD3E3A00319 /* NDCoolControl-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "../CoolButtonDemo/Pods/Target Support Files/NDCoolControl";
+			sourceTree = "<group>";
+		};
+		E56CC1E5A512642850E1A127EC8A6246 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				85BFF7CC9511AABA59EC7E19C2401E96 /* NDCoolControl.framework */,
+				2B1CF16EC40F98DDA02E5E9890575F60 /* Pods_CoolButtonDemo.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C4575662B76ADEB24385951663F56BF8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				77118B16D3FF72C871539B1BF313109A /* NDCoolButton.h in Headers */,
+				4049528124BDEA264559B7491550D293 /* NDCoolControl-umbrella.h in Headers */,
+				3DF317A5DE9508E29A7EE29E0A24864B /* NDCoolControl.h in Headers */,
+				03549EC21227D6728822FAAB94C9E259 /* UIView+PathCreator.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C476AD3049C4093A2131F74332D1A54A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2D319BEF1C95B42E2F4E9083890C044 /* Pods-CoolButtonDemo-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		097F756D8581DA9A816C71DD20F139E8 /* Pods-CoolButtonDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4645B68A5862F48C55652CEF9D572E18 /* Build configuration list for PBXNativeTarget "Pods-CoolButtonDemo" */;
+			buildPhases = (
+				C476AD3049C4093A2131F74332D1A54A /* Headers */,
+				B5753E74488866F50AC4B6141A9B2CD5 /* Sources */,
+				45D988FF4756CC2952B98C31A22517C3 /* Frameworks */,
+				FD656A210285397525F24000BA140613 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				066A1C9B1072550968BB2AC10AD283D0 /* PBXTargetDependency */,
+			);
+			name = "Pods-CoolButtonDemo";
+			productName = "Pods-CoolButtonDemo";
+			productReference = 2B1CF16EC40F98DDA02E5E9890575F60 /* Pods_CoolButtonDemo.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A667A5A1B5A2047B96BA76B2B21331DE /* NDCoolControl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C42B28EE352DA75E3829F3AB75ED3808 /* Build configuration list for PBXNativeTarget "NDCoolControl" */;
+			buildPhases = (
+				C4575662B76ADEB24385951663F56BF8 /* Headers */,
+				BE42042D6CC9F0E512DCCDEA1FF5E0CC /* Sources */,
+				D4D76BB506258535CBB9ECA1FC7392F8 /* Frameworks */,
+				8FB5448ECD4ABEB948511AA70A75E086 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NDCoolControl;
+			productName = NDCoolControl;
+			productReference = 85BFF7CC9511AABA59EC7E19C2401E96 /* NDCoolControl.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+			};
+			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
+			productRefGroup = E56CC1E5A512642850E1A127EC8A6246 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A667A5A1B5A2047B96BA76B2B21331DE /* NDCoolControl */,
+				097F756D8581DA9A816C71DD20F139E8 /* Pods-CoolButtonDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8FB5448ECD4ABEB948511AA70A75E086 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD656A210285397525F24000BA140613 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B5753E74488866F50AC4B6141A9B2CD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9C6D8CCAB8604918374FE490F364547 /* Pods-CoolButtonDemo-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE42042D6CC9F0E512DCCDEA1FF5E0CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0F6D72385742892C5C59E44F09E4D232 /* NDCoolButton.m in Sources */,
+				7E1E64CAE550451DE0D71383D6BF81A0 /* NDCoolControl-dummy.m in Sources */,
+				131F4DF5373D674E0EE3EE133DB68AB0 /* UIView+PathCreator.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		066A1C9B1072550968BB2AC10AD283D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NDCoolControl;
+			target = A667A5A1B5A2047B96BA76B2B21331DE /* NDCoolControl */;
+			targetProxy = 02399337A6BE08AC4E05749EDE840F14 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		12F178EEC7A99F6F30EE703003C81E91 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		2A1F125CAC0CD4615E2D7AF5636A3642 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47CA68539EB445D919157B2D6959375 /* NDCoolControl.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/NDCoolControl/NDCoolControl-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/NDCoolControl/NDCoolControl-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MODULEMAP_FILE = "Target Support Files/NDCoolControl/NDCoolControl.modulemap";
+				PRODUCT_MODULE_NAME = NDCoolControl;
+				PRODUCT_NAME = NDCoolControl;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		3641084100F7340AD298B22B3296E857 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA2BEF85B1F8DD93833C0A1A375949B9 /* Pods-CoolButtonDemo.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-CoolButtonDemo/Pods-CoolButtonDemo-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-CoolButtonDemo/Pods-CoolButtonDemo.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		3C11D2C8E90127F8E70AFA1043676363 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2E8502DCEBC2CF61A19FA588B9D89F2C /* Pods-CoolButtonDemo.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-CoolButtonDemo/Pods-CoolButtonDemo-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-CoolButtonDemo/Pods-CoolButtonDemo.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		AEADC7BB163DD6B8154C1F85ED0AEEAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B47CA68539EB445D919157B2D6959375 /* NDCoolControl.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/NDCoolControl/NDCoolControl-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/NDCoolControl/NDCoolControl-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MODULEMAP_FILE = "Target Support Files/NDCoolControl/NDCoolControl.modulemap";
+				PRODUCT_MODULE_NAME = NDCoolControl;
+				PRODUCT_NAME = NDCoolControl;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B225972148A10C0343DAFF188FF3D7F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4645B68A5862F48C55652CEF9D572E18 /* Build configuration list for PBXNativeTarget "Pods-CoolButtonDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C11D2C8E90127F8E70AFA1043676363 /* Debug */,
+				3641084100F7340AD298B22B3296E857 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				12F178EEC7A99F6F30EE703003C81E91 /* Debug */,
+				B225972148A10C0343DAFF188FF3D7F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C42B28EE352DA75E3829F3AB75ED3808 /* Build configuration list for PBXNativeTarget "NDCoolControl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AEADC7BB163DD6B8154C1F85ED0AEEAE /* Debug */,
+				2A1F125CAC0CD4615E2D7AF5636A3642 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+}

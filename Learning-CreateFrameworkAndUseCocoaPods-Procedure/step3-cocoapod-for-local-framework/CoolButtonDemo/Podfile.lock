@@ -1,0 +1,16 @@
+PODS:
+  - NDCoolControl (0.0.1)
+
+DEPENDENCIES:
+  - NDCoolControl (from `../NDCoolControl`)
+
+EXTERNAL SOURCES:
+  NDCoolControl:
+    :path: "../NDCoolControl"
+
+SPEC CHECKSUMS:
+  NDCoolControl: 66bc3d4e1bec479e555805348b3b38d6f11b3a3c
+
+PODFILE CHECKSUM: 3bfd2839bf1883866bafbe73bd9295f5bda424c5
+
+COCOAPODS: 1.6.0
