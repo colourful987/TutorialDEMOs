@@ -1,0 +1,6 @@
+framework module NDMath {
+  umbrella header "NDMath.h"
+
+  export *
+  module * { export * }
+}
