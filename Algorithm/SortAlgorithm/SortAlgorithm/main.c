@@ -16,15 +16,16 @@ void swap(int arr[],int a ,int b){
 void convertToMaxHeap(int array[], int index, int count){
     int temp = array[index];
     
-    // index 专门记录parent的索引
     for (int k = index * 2 + 1; k < count; k = k * 2 + 1) {
         /// index 父节点
         /// index * 2 + 1 左子节点
         /// index * 2 + 2 右子节点
-        if (k+1 < count && array[k] < array[k+1]) {
+        if (k+1 < count && array[k+1] > array[k]) {
+            // 右节点
             k++;
         }
         
+        // 交换最大值 swap
         if (array[k] > temp) {
             array[index] = array[k];
             index = k;
@@ -32,7 +33,7 @@ void convertToMaxHeap(int array[], int index, int count){
             break;
         }
     }
-    array[index] = temp;
+    array[index] = temp; // 其实若真的存在要交换的 那么总是在交换顶端的那个
 }
 
 void heap_sort(int array[], int count){
@@ -52,10 +53,9 @@ void heap_sort(int array[], int count){
     for (int i = count/2 - 1; i >= 0; i--) {
         convertToMaxHeap(array, i, count);
     }
-    
     for (int j = count-1; j >= 0 ; j--) {
         swap(array, 0, j);
-        convertToMaxHeap(array, 0, j);
+        convertToMaxHeap(array, 0, j-1);
     }
     
 }
