@@ -8,6 +8,29 @@
 
 #include "quick_sort.h"
 
+void dynamic_sort(int a[],int n){
+    if (n < 10) {
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                if (a[i] > a[j])
+                    swap(a + i, a + j);
+    } else if (n > 1) {
+        swap(a, a + rand() % n);
+        int pivot = a[0];
+        int i = -1, j = n;
+        
+        while (i < j) {
+            do i++; while (a[i] < pivot);
+            do j--; while (a[j] > pivot);
+            if (i < j) swap(a + i, a + j);
+        }
+        j++;
+        sort(a, j);
+        sort(a + j, n - j);
+    }
+    
+}
+
 void quick_sort(int array[],int left,int right) {
     if(left >= right) {
         return ;
@@ -22,7 +45,7 @@ void quick_sort(int array[],int left,int right) {
         while (i<j && array[j] >= key) {
             j--;
         }
-        array[i] = array[j]; // 从最右边找到一个大于基准值key的值，填补到i处
+        array[i] = array[j]; // 从最右边找到一个小于基准值key的值，填补到i处
         
         while (i<j && array[i] <= key) {
             i++;
