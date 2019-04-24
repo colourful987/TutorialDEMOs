@@ -53,7 +53,28 @@ In fact , import oc framework into our oc project, default use `#use_frameworks`
 
 ## Step4 : cocoapod for remote framework
 
-without issues
+No issues. Record some git & pod command:
+
+```shell
+# Go to the demo project, use this command to create .xcworkspace file and Podfile
+pod init 
+
+# Go to the pod project, use this command to create *.podspec file, it's soul for your pod, no *.podspec, nothing!
+pod spec create <#NameForYourPod#>
+
+# When you end up development with your pods (use path reference in Podfile), tag it and push to origin
+git tag -a "1.0.4" -m "version1.0.4"
+git push origin --tags
+
+# Validate your *.podspec file
+pod spec lint --allow-warnings <#NameForYourPod#>.podspec
+
+# check your pod spec repo, default is master https://github.com/CocoaPods/Specs.git
+pod repo list 
+
+# If you has a lot of podspec files, you can create a privacy podspecs repo, store all podspecs file into it by tags. There are two options you can use, below is simplest
+pod repo push <#your_specs_repo_name#> --verbose --allow-warnings <#NameForYourPod#>.podspec
+```
 
 ## Step5 : create  private Specs for remote framework
 
