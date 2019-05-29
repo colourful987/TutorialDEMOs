@@ -180,9 +180,74 @@ struct section_64 { /* for 64-bit architectures */
 
 说了一堆，还是没扯到fishhook如何替换的函数，以及如何多次间接寻址。这个直接看fishhook源码。今天收获还是蛮大的。
 
+接下来是"吃"第二篇文章[fishhook使用场景&源码分析](https://juejin.im/post/5c810294f265da2db91297f1)。
 
+```c
+struct rebinding {
+  const char *name;
+  void *replacement;
+  void **replaced;
+};
+```
 
+* replacement 指针，存储的是被调用函数的地址；
+* replaced 指针的指针，如果将 `void (*exchangeP)(Method _Nonnull m1, Method _Nonnull m2);`看做是变量声明的一种，那么 exchangeP 变量存储的值就是函数调用的地址，但是exchangeP作为**变量**（类型为函数指针），自然也有个内存地址存储它，获取这个内存地址就需要用 `&exchangeP` 。 这里为啥用指针的指针，存疑下。
 
+**5/29** 解答：
+
+**replaced 指针的指针**，看了源码之后就很清楚，还是拿之前的例子说明：
+
+```c
++ (void)load {
+    struct rebinding ex;
+    ex.name = "method_exchangeImplementations";
+    ex.replacement = myExchange;
+    ex.replaced = (void *)&exchangeP;
+    
+    struct rebinding rebs[1] = {ex};
+    rebind_symbols(rebs,1);
+}
+
+void (*exchangeP)(Method _Nonnull m1, Method _Nonnull  m2);
+
+void myExchange(Method _Nonnull m1, Method _Nonnull  m2) {
+    struct rebinding nslog;
+    nslog.name = "NSLog";
+    nslog.replacement = myNslog;
+    nslog.replaced = (void *)&sys_nslog;
+    
+    struct rebinding rebs[1] = {nslog};
+    rebind_symbols(rebs,1);
+    NSLog(@"呀呀呀哎呀");
+}
+```
+
+`ex.replaced = (void *)&exchangeP;` 这句代码很有意思。这里我初读时疑问有二：
+
+1. exchangeP 和我真正想要替换的那个函数有什么直接关系？貌似八竿子打不到呀，甚至这个只是个函数声明，都没有实现！
+2. 为什么replaced要用指针的指针。
+
+归结原因其实就一个：这里声明的 exchangeP 是个函数指针**变量**，省去了修饰关键字 extern，是个全局变量，默认值为0x00000000，假设这个值存储在内存地址0x11223344这个位置，那么对于 `(void *)&exchangeP`  取址就等于 0x11223344；
+
+至于指针的指针，fishhook 中的 `perform_rebinding_with_section` 函数中会把原先的origin函数地址存储到这个0x11223344内存位置，所以之后如果其他地方调用 `exchangeP()` 就等同于调用旧实现了。
+
+fishhook 源代码看了一部分，没多少代码量，实现也很简单，重点是你必须理解mach-o定义的格式，基本就是下面几个结构体类型：
+
+```c
+typedef struct mach_header_64 mach_header_t;
+typedef struct segment_command_64 segment_command_t;
+typedef struct section_64 section_t;
+typedef struct nlist_64 nlist_t;
+```
+
+在看源码的过程中，发现和fishhook github中的寻找流程似乎不太一样，另外用MachOView查看 `Load Commands` 中的`LC_SEGMENT_64(__DATA)`中的`Section64 Header(__la_symbol_ptr)` 内容，reserved1字段(在MachOView为 Indirect Sym Index) 值和调试源码的值不一致。
+
+源码有待继续学习。
+
+## Reference
+
+* [fishhook的实现原理浅析](https://juejin.im/post/5c7b43976fb9a04a05406312)，基本吃透涉及的知识点，里面有些许错误；
+* 
 
 
 
