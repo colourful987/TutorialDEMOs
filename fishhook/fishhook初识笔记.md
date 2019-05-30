@@ -193,7 +193,7 @@ struct rebinding {
 * replacement 指针，存储的是被调用函数的地址；
 * replaced 指针的指针，如果将 `void (*exchangeP)(Method _Nonnull m1, Method _Nonnull m2);`看做是变量声明的一种，那么 exchangeP 变量存储的值就是函数调用的地址，但是exchangeP作为**变量**（类型为函数指针），自然也有个内存地址存储它，获取这个内存地址就需要用 `&exchangeP` 。 这里为啥用指针的指针，存疑下。
 
-**5/29** 解答：
+#### **5/29** 解答：
 
 **replaced 指针的指针**，看了源码之后就很清楚，还是拿之前的例子说明：
 
@@ -244,10 +244,37 @@ typedef struct nlist_64 nlist_t;
 
 源码有待继续学习。
 
+#### 5/30 文章笔记补充
+
+> 文章：简书fishhook源码解析——初心丶可曾记
+
+简单了解了下 Mach-O 文件格式：
+
+1. Header:头部信息，描述该文件的一些基本信息，例如cpu类型，文件架构类型是arm64还是x86等等。
+2. Load commands:主要是描述了文件在内存中的布局，一个segment command对应一个segment data，描述了它在文件中的偏移地址，内存大小等信息。
+3. Segment Data:segment的具体数据，__TEXT段表示这部分数据是代码，也即是这部分数据是执行指令的，__DATA段表示存放的是数据,如全局变量、静态变量等数据。关于TEXT可以尝试去看下，是否有具体代码的指令存在；
+
+App 启动链接很多系统库，比如UIKit、UIFoundation等。
+
+* [ ] 疑问一：动态库都是共享的一份代码，但是数据独立，上述是很多地方都这么阐述的，但是想问程序跑起来，何为**加载**系统库，是copy一份内存到程序所在内存呢？还是解析symbol，然后指向共享的系统库内存？
+* [ ] 疑问二：如果是共享，为什么 dyld 提供的：`_dyld_register_func_for_add_image` 是监听image加载事件，这里的image是什么东西？是整个动态库，还是其他？
+
+讲道理一开始外部系统函数都是指向 `dyld_stub_binder` 函数，但是通过 MachOView 查看 `__DATA,__la_symbol_prt` 表发现只有第一个貌似是指向的，其他都是不同诶，所以这里有待考证。
+
+本文中关于获取`indirect Symbols` 中的 index2 计算方式有点"诡异"，reserved1 没问题，但是index1就让我有点懵逼了，发现很多文章都是站在MachOView这个工具上自圆其说。。。
+
+文章后面同样是在找 String Table 中的符号名称，但是又没说清楚为啥要找，找这个作用，手动滑稽。
+
+源码分析就略过，看到有一点说的：
+
+> Mach-O加载进内存的地址是经过ASLR(Address Space Layout Randomization),地址空间布局随机化。就是说每次Mach-O的内存地址不是从固定的地址开始，而是每次加上了一个随机数。所以要找到每张表的地址除了从Load Commands中获取offset偏移，还要计算ASLR后的基地址。找到几张符号表的地址之后，调用perform_rebinding_with_section进行重新绑定。
+
+* [ ] mark下 ASLR 的知识点
+
 ## Reference
 
 * [fishhook的实现原理浅析](https://juejin.im/post/5c7b43976fb9a04a05406312)，基本吃透涉及的知识点，里面有些许错误；
-* 
+* [简书fishhook源码解析——初心丶可曾记](https://www.jianshu.com/p/54946d7e8d36)，
 
 
 
