@@ -271,6 +271,14 @@ App 启动链接很多系统库，比如UIKit、UIFoundation等。
 
 * [ ] mark下 ASLR 的知识点
 
+
+
+### 6/03 文章笔记
+
+> [Amywushu 的 Hook 原理之 fishhook 源码解析比较到位，逻辑表述都很清晰。](https://amywushu.github.io/2017/02/27/源码学习-Hook-原理之-fishhook-源码解析.html)
+
+本文图文并茂阐述了整个查询符号的过程，较之其他文章来说更详细一些。当然这个过程是查找匹配特定符号的字符串，关于Mach-O的文件格式，作者还有一篇文章  [解读 Mach-O 文件格式](https://amywushu.github.io/2017/02/21/基础知识-解读-Mach-O-文件格式.html)。
+
 ## Reference
 
 * [fishhook的实现原理浅析](https://juejin.im/post/5c7b43976fb9a04a05406312)，基本吃透涉及的知识点，里面有些许错误；
