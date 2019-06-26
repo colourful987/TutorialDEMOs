@@ -136,17 +136,43 @@ public protocol Subscriber : CustomCombineIdentifierConvertible {
 
 
 
+> 箭头指向表示发送消息，发送消息的本质就是调用对方提供的消息接口。
 
 
 
+![](https://images.xiaozhuanlan.com/photo/2019/2f5fedf6f2c4c5e32d0e9e916cf10504.png)
 
+* 订阅者（Subscriber）和发布者（ Publisher ），两者都是有对方的“联系方式”（就是互相知道对方向外公布的接口）；
+* 订阅者向发布者订阅，发布者自然会拿“小本本”记录下订阅者信息，最后随着订阅者越来越多，小本本就记了很多；
+* 发布者自己产生事件也好，或者外部通知发布者事件产生也罢，发布者会对着小本本，一个个通知订阅者这个消息；
+* 订阅者当然也有自己的诉求，所以发布者也提供了 `request(_ : Demand)` 接口，但是这里我有个疑惑，这个接口请求了是否所有订阅者都会接收到信息，如果是谁请求谁接收的规则，那么如何实现呢？
 
+# 例子讲解
 
+```swift
+class Foo {
+    var name:String
+    init(name:String) {
+        self.name = name
+    }
+}
 
+let object = Foo(name: "Test")
+let publisher = NotificationCenter.Publisher(center: .default, name: Notification.Name(rawValue: "Send"), object: object)
+let subscriber = Subscribers.Assign(object: object, keyPath: \.name)
 
+publisher.subscribe(subscriber)
+```
 
+**我们需要一个publisher ！**NotificationCenter 会帮我们生成，猜测publisher实例内部已经像 NotificationCenter.default 注册了通知，这里事件消息来源是 upstream 。
 
+**我们需要一个 subscriber！**同样是一个实例，何为订阅者，往大了说 Foo 实例可以是一个订阅者，往小了说 Foo 实例的 name 属性是订阅者，所以喽 `Subscribers.Assign` 返回订阅者就不难理解了。
 
+**我们需要绑定！**，`publisher.subscribe(subscriber)` 非常形象地将订阅者向发布者订阅消息的动作描述得栩栩如生。
+
+> 当然上面的代码是不能生效的！因为订阅者要的是类型A的消息，但是发布者是类型B的消息，想把两者绑起来，那显然不行啊，强扭的瓜不甜！
+
+一句话，类型匹配很重要！这里要么订阅者变更消息类型，要么就是发布者变更输出消息类型。所以这里要用到 map 等方法。
 
 
 
