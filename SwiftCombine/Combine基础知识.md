@@ -74,6 +74,20 @@ extension Publisher {
 }
 ```
 
+* `receive(on:options:)` 和 `subscribe<S>(on scheduler: S)` 
+
+* `receive<S>(subscriber: S)` 和 `subscribe<S>(_ subscriber: S)`
+
+需要理解清楚才能继续 Combine 的下一轮学习，函数名一样但是传参不一样，意思还是差的蛮多的。
+
+首先 `on` 这个词就是 **注册到** 和 **接受在** 中的 **“在”**。`subscribe<S>(on scheduler: S)` 是针对 Publisher 发布者来说，本质上来说发布者也是订阅者，它也应该有一个上游信息源（upstream）；`receive(on:options:)` 则是针对Publisher的订阅者的消息来源，对于 Publisher 来说就是下游消息源（downstream），它应该有“责任和义务”派发消息给那帮订阅者，但是有个问题！上游消息来源可能在子线程，但是订阅者要求接收消息是在主线程！所以这时候就需要 `receive(on:options:)` 方法来进行派发。
+
+![](1.png)
+
+> 有 `on` 两个方法就是就是针对数据的操作，一个上游（upstream） 一个下游(downstream)。
+
+
+
 其实 Publisher 还有个真正符合它身份的接口`subscribe<S>(_ subscriber: S)`
 
 ```swift
