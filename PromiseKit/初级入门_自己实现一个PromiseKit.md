@@ -91,6 +91,75 @@ requestA { (responseA) in
 }
 ```
 
+既然这么写会导致 callback hell ，那么我们就得换一种表现上简洁、易懂的写法，当然是本质不会变的，依旧是异步+回调。
+
+明确下一个进行异步操作的方法是怎么样的：
+
+```swift
+func asyncOperation(complete : ()-> Void){
+    // 异步执行任务，通常借助 GCD dispatch到 globalQueue 执行任务
+ 		// 如果不借助GCD，就是自己起一个线程执行任务。
+  	// 任务是过程式，即一行行执行代码，执行完毕紧接着调用complete
+  	DispatchQueue.global().async {
+      // do something ...
+    	complete()
+    }
+}
+```
+
+方法会提供一个 `complete` 闭包，这里类型定义比较简单:`(String)-> Void`，方法内部的异步实现这里用到了 GCD，返回值为 `Void`。因此简单的异步操作方法的类型为：
+
+```swift
+typealias AsyncFunc = ((String)->Void) -> Void
+```
+
+这里的 `asyncOperation` 方法就是 `AsyncFunc` 类型，它接收`()->Void`函数指针参数，返回值为空。
+
+> 我们定制了两个异步操作的执行顺序(**这一点相当重要**)，规则1：第一个异步操作完成后，在`complete`闭包中执行下一个异步操作；规则2：两个异步操作同时进行，但是必须等两个操作都完成后才能执行下一步操作。
+
+
+
+**实现规则一：第一个异步操作完成，执行下一个异步操作。**
+
+现在我们将两个**异步操作** ”揉“成一个操作，但这个操作是“冷”的，并未被执行。而揉成的新操作内部持有两个异步操作，以我们约定的规则进行调用。
+
+```swift
+func concat(left:AsyncFunc,right:AsyncFunc) -> AsyncFunc {
+    return {
+        complete in
+        
+    }
+}
+```
+
+按照之前说的我们将两个异步操作传入，“揉”成一个新的异步操作返回，这个方法命名为 `concat`，实现模板如上。
+
+方法具体的实现规则是先调用 left 异步操作，完成后再调用 right 异步操作，两者都完成了才执行complete闭包，这个是新操作开放给外部的接口——允许用户在两个异步操作完成后执行一些其他事务项。
+
+```swift
+func concat(left:@escaping AsyncFunc,right:@escaping AsyncFunc) -> AsyncFunc {
+    return {
+        complete in
+      	// 《=== 1. 调用 left 异步操作
+        left { // 《=== 2. 这里传入的是 left 异步操作的 complete 闭包，执行的是调起 right闭包
+            _ in 
+          	// 《=== 3. 正如你所看到这里调用 right 异步操作
+            right { // 《=== 4. 这里同样传入的 right 异步操作的 complete 闭包，表明两个操作都完成时应该执行开放给外部的 complete 闭包
+                _ in
+                complete("all done")
+            }
+        }
+    }
+}
+```
+
+仔细阅读下上面的注释应该可以简单理解这里的思想。
+
+```swift
+let concatedFunction = concat(asyncOperation, 
+                               right: asyncOperation1)
+```
+
 
 
 
