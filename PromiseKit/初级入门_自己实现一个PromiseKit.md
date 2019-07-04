@@ -156,11 +156,75 @@ func concat(left:@escaping AsyncFunc,right:@escaping AsyncFunc) -> AsyncFunc {
 仔细阅读下上面的注释应该可以简单理解这里的思想。
 
 ```swift
-let concatedFunction = concat(asyncOperation, 
-                               right: asyncOperation1)
+let concatRequest = concat(left: requestA, right: requestB)
+
+// 调用合并后的操作，并传入complete闭包，即当两个请求都完成后，我们需要做什么
+concatRequest { response in 
+    print("请求完毕")
+}
 ```
 
+一个异步操作形如下图：
 
+![](1.png)
+
+而两个异步操作按照我们期望的规则： **先执行异步操作1，完成后执行异步操作2，操作2完成后再执行最终操作X**。
+
+![](./3.png)
+
+此刻只是把两个操作串联起来，它们处于待命状态，一旦你调用异步操作1函数，这才开始“一出好戏”。
+
+![](./4.png)
+
+安排的明明白白，代码形如：
+
+```swift
+requestA { (responseA) in
+    requestB { (responseB) in
+        requestC { (responseC) in
+        }
+    }
+}
+```
+
+现在如果要将两个异步操作合并成一个操作，那么我们需要明确的是异步操作之间的调用关系是已经决定的，所以也就意味着**第一个异步操作的complete必定是调用第二个异步操作；**其次，注意第二个异步操作同样接收了一个 complete，这个闭包是在**异步操作二完成后调用，换句话说就是两个异步操作都完成时调用**！因此合并后的新操作应该是这样的。
+
+![](./5.png)
+
+封装了异步操作1和操作2的**新操作X**，同样是对外开放一个complete接口，但其时机是内部封装的两个异步操作按既定顺序执行完毕后调用。源码再贴一遍：
+
+```swift
+typealias AsyncFunc = ((String)->Void) -> Void
+
+func concat(left:@escaping AsyncFunc,right:@escaping AsyncFunc) -> AsyncFunc {
+  	// 定义咱们合并后的异步操作，首先是对外要提供一个 complete 接口
+  	// 所以就是下面这么写，complete 类型为 (String)->Void 
+    // 即这个闭包是两个操作完成后调用的，告诉你两操作的结果值(String类型)
+    return {
+        complete in //《=== 这个就是外部要传入的参数，说白了就是函数指针
+    }
+}
+```
+
+至于内部实现咱们照着上图的红色箭头写：
+
+```swift
+func concat(left:@escaping AsyncFunc,right:@escaping AsyncFunc) -> AsyncFunc {
+    return {
+        complete in //《=== 这个就是外部要传入的参数，就当是函数指针
+        // 先调用left 异步操作1，当然这里在left complete的闭包中绑定
+      	// 之后的操作：即执行right 异步操作2
+        left {  _ in 
+             // 这里同理，在right complete闭包中注册完成事件，
+             // 此刻left right 两个异步操作完成，就要执行complete闭包
+             // 它是由外部传入的，上图最右侧粉色框
+          	 right { _ in 
+                    complete()
+             }
+        }
+    }
+}
+```
 
 
 
