@@ -194,7 +194,7 @@ requestA { (responseA) in
 封装了异步操作1和操作2的**新操作X**，同样是对外开放一个complete接口，但其时机是内部封装的两个异步操作按既定顺序执行完毕后调用。源码再贴一遍：
 
 ```swift
-typealias AsyncFunc = ((String)->Void) -> Void
+typealias AsyncFunc = ((Void)->Void) -> Void
 
 func concat(left:@escaping AsyncFunc,right:@escaping AsyncFunc) -> AsyncFunc {
   	// 定义咱们合并后的异步操作，首先是对外要提供一个 complete 接口
@@ -225,6 +225,275 @@ func concat(left:@escaping AsyncFunc,right:@escaping AsyncFunc) -> AsyncFunc {
     }
 }
 ```
+
+ `concat` 函数将两个异步操作合并成一个新的 `AsyncFunc` 返回，内部handle flow按照约定好的走：先执行异步操作一，完成时调用异步操作2，等它完成时（此刻两个异步操作都完成了）调用外部传入的 `complete` 闭包。
+
+那么 `concat` 得到的复合异步操作，继续串联一个简单异步操作又是如何呢？
+
+由于返回的复合异步操作是 `AsyncFunc`，所以复合 concat 函数的传参，因此可以继续调用，如图所示：
+
+![](./6.png)
+
+以此类推，所以concat可以一直无限下去，但是现在的问题是写法不友好：
+
+```swift
+var compoundAsyncFunc = concat(baseAsync1,baseAsync2)
+var compoundAsyncFunc1 = concat(compoundAsyncFunc,baseAsync3)
+var compoundAsyncFunc2 = concat(baseAsync4,compoundAsyncFunc1)
+//... 😲...
+```
+
+所以我们想要提供一种更优雅的方式，比如用操作符，这归功于Swift的特性，允许我们自定义操作符，所以延续莲叔的定义:
+
+```swift
+infix operator +>: AdditionPrecedence
+
+func +> (left : @escaping AsyncFunc, right:@escaping AsyncFunc) -> AsyncFunc {
+    return {
+        complete in 
+        left {  _ in
+          	 right { _ in 
+                    complete()
+             }
+        }
+    }
+}
+```
+
+所以上面的调用改为：
+
+```swift
+var compoundAsyncFunc1 = baseAsync1 +> baseAsync1 +> baseAsync3
+var compoundAsyncFunc2 = baseAsync4 +> compoundAsyncFunc1
+```
+
+> 思考： baseAsync4 +> baseAsync1 +> baseAsync1 +> baseAsync3 是否可以直接这样，结合律？
+
+
+
+上面的异步两个异步操作的 handle flow 规则已经熟知，那么还有一种方式，现定义如下：**异步操作1和异步操作2同时执行，但是必须等两个都完成后才能继续下一步，一般是执行用户注入的complete闭包**。
+
+有了之前的继续，现在实现这种关系的操作就非常简单了，我们只需要为每个异步操作设定一个flag标识是否完成就可以啦，然后判断 ` leftComplete && rightComplete` 就行，下面直接贴操作符代码，一步到位：
+
+```swift
+infix operator <>: AdditionPrecedence
+
+
+func <> (left : @escaping AsyncParamFunc, right:@escaping AsyncParamFunc) -> AsyncParamFunc {
+    return {
+        info, complete in
+        var leftComplete = false
+        var rightComplete = false
+        var finishedComplete = false
+        
+        var leftResult:AnyObject? = nil
+        var rightResult:AnyObject? = nil
+        
+        let checkComplete = {
+            if leftComplete && rightComplete {
+                objc_sync_enter(finishedComplete)
+                if !finishedComplete {
+                    let finalResult :[AnyObject] = [leftResult!,rightResult!]
+                    complete(finalResult as AnyObject)
+                    finishedComplete = true
+                }
+                objc_sync_exit(finishedComplete)
+            }
+        }
+        
+        left(info){
+            result in
+            leftComplete = true
+            leftResult = result
+            checkComplete()
+        }
+        
+        right(info){
+            result in
+            rightComplete = true
+            rightResult = result
+            checkComplete()
+        }
+    }
+}
+```
+
+> 思考：既然是异步操作，不可避免会和多线程挂钩，那么就必须对标识加锁，否则会执行异常，举个例子，如果left right 两异步操作都执行完毕，先执行left的complete闭包，设定 `leftComplete = true`，此时CPU立马枪头一调，时间片给了right的complete，那么执行完 `checkComplete`时就会满足条件执行下去，最后时间片又给回left，也能checkComplete成功执行下去，这下就糟糕了，执行了两次！！所以加锁非常有必要哦。
+
+
+
+## Promise 的简单实现
+
+主要实现几个关键函数：`firstly`，`then`，`always`，`when`。
+
+通过上面多图展示，显然我们需要自定义一个类来Wrapper这些异步操作，然后开放API以几种规则来 concat 两个异步操作。话不多说，先简单定义一个 Promise 类：
+
+```swift
+class Promise {
+    var chain:AsyncFunc
+    var alwaysClosure: (()->Void)?
+    var errorClosure:((Error?)->Void)?
+    
+    init(starter:@escaping AsyncFunc) {
+        chain = starter
+    }
+    
+    func then(body:@escaping (AnyObject) throws -> Void) ->Promise { }
+    
+    func always(closure:@escaping (() ->Void)) ->Promise{ }
+    
+    func error(closure : @escaping ((Error?)->Void))->Promise{}
+    
+    func fire(){}
+}
+```
+
+这里主要就介绍一个 then 函数，中文意思就是**“接着”**干嘛的意思，也就是不断往我们的工作流中添加任务项，你以为我要说用数组或者链表来保存这些任务项？？？
+
+> 可以，但没必要… 手动滑稽。
+
+言归正传，我们这里用一个 AsyncFunc 类型的 chain 变量，这里理解为一个函数指针，函数接收一个 complete 闭包参数，这个是 **连接** 其他异步操作的桥梁，我们在 `+>` 或 concat 函数中为两个异步操作建立调用关系。所以 `then` 函数就是内部在不断 `chain +> = asyncFunc` 。But，你注意到 `then` 函数似乎传入的并不是 AsyncFunc 类型，是调用者具体的实现，这可怎么办？既然直接不行，那么就间接！我们在 `then` 内部Wrapper 这个实现成一个 AsyncFunc 不就可以了嘛！
+
+```swift
+func then(body:@escaping (AnyObject) throws -> Void) ->Promise {
+  let async:AsyncFunc = {
+    info, complete in
+    DispatchQueue.global().async {
+      var error:Error?
+      do{
+        try body(info!)
+      } catch let err as Error{
+        error = err
+      }
+      complete(0 as AnyObject,error)
+    }
+  }
+  chain = chain +> async
+  return self
+}
+```
+
+其他的实现就更简单了：
+
+```swift
+class Promise {
+    var chain:AsyncFunc
+    var alwaysClosure: (()->Void)?
+    var errorClosure:((Error?)->Void)?
+    
+    init(starter:@escaping AsyncFunc) {
+        chain = starter
+    }
+    
+    func then(body:@escaping (AnyObject) throws -> Void) ->Promise {
+        //... 👆
+    }
+    
+    func always(closure:@escaping (() ->Void)) ->Promise{
+        alwaysClosure = closure
+        return self
+    }
+    
+    func error(closure : @escaping ((Error?)->Void))->Promise{
+        errorClosure = closure
+        self.fire()
+        return self
+    }
+    
+    func fire(){
+        chain(0 as AnyObject){
+            info, error in
+            if let always = self.alwaysClosure {
+                always()
+            }
+            
+            if error == nil{
+                print("all task finished")
+            } else {
+                if let errorC = self.errorClosure{
+                    errorC(error)
+                }
+            }
+        }
+    }
+}
+```
+
+你可能在诧异 firstly 和 when 呢？我们把它们单独拎出来变成一个函数。
+
+```swift
+func firstly(body : @escaping ()->Void)->Promise{
+    let starter: AsyncFunc = { _,complete in
+        DispatchQueue.global().async {
+            body()
+            complete(0 as AnyObject,nil)
+        }
+    }
+    
+    return Promise(starter: starter)
+}
+```
+
+when 比较有意思一些，这里的操作有点骚气，尤其是在 `while` 这里，思考下什么场景要这样。
+
+```swift
+func when(fstBody : @escaping (()->Void), sndBody : @escaping (()->Void)){
+    let async1 : AsyncFunc = { _ , complete in
+        DispatchQueue.global().async {
+            fstBody();
+            complete(0 as AnyObject,nil);
+        }
+    }
+    
+    let async2 : AsyncFunc = { _ , complete in
+        DispatchQueue.global().async {
+            sndBody();
+            complete(0 as AnyObject,nil);
+        }
+    }
+    
+    let async = async1 <> async2
+    
+    var finished = false
+    
+    async(0 as AnyObject) { (_, _) in
+        finished = true
+    }
+    
+    while finished == false {
+        
+    }
+}
+```
+
+实际测试下代码：
+
+```swift
+firstly { () in
+    when(fstBody: { () in
+        print("begin fst job")
+        sleep(2)
+        print("fst job in when finished")
+    }, sndBody: { () in
+        print("begin snd job")
+        sleep(5)
+        print("snd job in when finished")
+    })
+}.then { (info) in
+        print("second job")
+}.then { (info) in
+        print("third job")
+}.always { () in
+        print("always block")
+}.error { (error) in
+        print("error occurred")
+}
+
+
+RunLoop.main.run()
+```
+
+ ## PromiseKit 源码分析
 
 
 
