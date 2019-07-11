@@ -404,14 +404,81 @@ func asVoid() -> Promise<Void> {
 }
 ```
 
-`Thenable` 对 `Sequence` 类型做了一些扩展：
+`Thenable` 对 `Sequence` 类型做了一些扩展，这些都是高等函数，对于结果值（Result 枚举绑定值）为数组类型，间接调用了系统提供的 `map`，`flatMap`，`filter` 函数。
 
 * `mapValues`
+
+  ```swift
+  firstly {
+    .value([1,2,3])
+  }.mapValues { integer in
+    integer * 2
+  }.done {
+    // $0 => [2,4,6]
+  }
+  ```
+
 * `flatMapValues`
+
+  ```swift
+  firstly {
+   .value([1,2,3])
+  }.flatMapValues { integer in
+   [integer, integer]
+  }.done {
+   // $0 => [1,1,2,2,3,3]
+  }
+  ```
+
 * `compactMapValues`
+
+  ```swift
+  firstly {
+   .value(["1","2","a","3"])
+  }.compactMapValues {
+   Int($0)
+  }.done {
+   // $0 => [1,2,3]
+  }
+  ```
+
 * `thenMap`
+
+  ```swift
+  firstly {
+   .value([1,2,3])
+  }.thenMap { integer in
+   .value(integer * 2)
+  }.done {
+   // $0 => [2,4,6]
+  }
+  ```
+
 * `thenFlatMap`
+
+  ```swift
+  firstly {
+   .value([1,2,3])
+  }.thenFlatMap { integer in
+   .value([integer, integer])
+  }.done {
+   // $0 => [1,1,2,2,3,3]
+  }
+  ```
+
 * `filterValues`
+
+  ```swift
+  firstly {
+   .value([1,2,3])
+  }.filterValues {
+   $0 > 1
+  }.done {
+   // $0 => [2,3]
+  }
+  ```
+
+  
 
 `Thenable` 对 `Collection` 类型做的扩展：
 
