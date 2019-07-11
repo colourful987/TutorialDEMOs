@@ -228,13 +228,195 @@ func then<U: Thenable>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemF
 
 1. 实例化一个 `Promise` 承诺；
 2. `pipe` 要求外部实现，但扩展中 `to: @escaping(Result<T>` 闭包有默认实现。真正的操作**实际上是方法中的 `body` 闭包**！异步操作也是借助了**GCD 队列**。
-3. `let rv = try body(value)`  执行异步操作，然后返回下一个 `Thenable` 对象，这样才能用 `rv.pipe(to: rp.box.seal)` 串起来。
+3. `let rv = try body(value)`  执行异步操作，然后返回下一个 `Thenable` 对象，这样才能用 `rv.pipe(to: rp.box.seal)` 串起来。 **这里疑问`body`闭包要求返回一个 `Thenable` 对象，如果`body`是我们想要异步执行的操作，返回值应该由调用方决定返回什么，所以这里大胆先猜测要么是约定，要么并不是什么具体的异步操作。**
+
+`map` 方法官方说明“The provided closure is executed when this promise is resolved.”  
+
+> 这里 `map` 方法泛型` U `并不需要遵循 `Thenable` 协议，`map` 更多地是将值类型变换的过程。
+
+```swift
+func map<U>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T) throws -> U) -> Promise<U> {
+  let rp = Promise<U>(.pending)
+  pipe {
+    switch $0 {
+      case .fulfilled(let value):
+      on.async(flags: flags) {
+        do {
+          // 1
+          rp.box.seal(.fulfilled(try transform(value)))
+        } catch {
+          // 2
+          rp.box.seal(.rejected(error))
+        }
+      }
+      case .rejected(let error):
+      // 3
+      rp.box.seal(.rejected(error))
+    }
+  }
+  return rp
+}
+```
+
+> 1，2，3 简单理解就是往 EmptyBox 中封存了一个 Result 结果值，可能是`fulfilled` 也可能是 `rejected`。
+
+「compact」译为 「紧凑的」，可选类型值就像一个充气的塑料袋，我们“啪”一下将其拍扁，剔除 `nil` 值的情况。 `compactMap` 和 `map` 其实是差不多的，差别就在于 `transform` 得到值的处理，若未`nil` 会抛出错误。
+
+```swift
+func compactMap<U>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T) throws -> U?) -> Promise<U> {
+  let rp = Promise<U>(.pending)
+  pipe {
+    switch $0 {
+      case .fulfilled(let value):
+      on.async(flags: flags) {
+        do {
+          if let rv = try transform(value) {
+            rp.box.seal(.fulfilled(rv))
+          } else {
+            throw PMKError.compactMap(value, U.self)
+          }
+        } catch {
+          rp.box.seal(.rejected(error))
+        }
+      }
+      case .rejected(let error):
+      rp.box.seal(.rejected(error))
+    }
+  }
+  return rp
+}
+```
+
+`done` 方法时机在于 promise 被解决时调用。对照 `then` 方法，注意 `body(value) ` 执行完就没事了，而 `then` 需要用 `pipe` 串联起来。
+
+```swift
+func done(on: DispatchQueue? = conf.Q.return, flags: DispatchWorkItemFlags? = nil, _ body: @escaping(T) throws -> Void) -> Promise<Void> {
+  let rp = Promise<Void>(.pending)
+  pipe {
+    switch $0 {
+      case .fulfilled(let value):
+      on.async(flags: flags) {
+        do {
+          try body(value)
+          rp.box.seal(.fulfilled(()))
+        } catch {
+          rp.box.seal(.rejected(error))
+        }
+      }
+      case .rejected(let error):
+      rp.box.seal(.rejected(error))
+    }
+  }
+  return rp
+}
+```
+
+`get` 方法应用场景是想在pipe管道的某个处理环节取值，但又不想影响整个流程。源码实现 `try body($0)` 看上去像是切片方法提供给外部调用，闭包内部最后返回的是$0，并没有做任何修改。
+
+```swift
+func get(on: DispatchQueue? = conf.Q.return, flags: DispatchWorkItemFlags? = nil, _ body: @escaping (T) throws -> Void) -> Promise<T> {
+  return map(on: on, flags: flags) {
+    try body($0)
+    return $0
+  }
+}
+```
+
+`tap` 是想获得 `Result<T>` 值，和`get` 方法作用类型，在分析它源码前先看下 Promise 提供的一种构造方法，方便之后理解，构造器的入参是一个闭包，类型是接收一个 `Resolver`，方法内部先实例化一个 box 和 resolver，然后调用 `body` 闭包。
+
+```swift
+public init(resolver body: (Resolver<T>) throws -> Void) {
+  box = EmptyBox()
+  let resolver = Resolver(box)
+  do {
+    try body(resolver)
+  } catch {
+    resolver.reject(error)
+  }
+}
+```
+
+现在再看 `tap` 方法实现，代码片段1就理解了，`pipe` 协议方法要由具体类来实现，它的定义为：`func pipe(to: @escaping(Result<T>) -> Void)`，就是个闭包对象，笔者简单看了下 Promise 对 `Thenable` 协议的实现:
+
+```swift
+public func pipe(to: @escaping(Result<T>) -> Void) {
+  switch box.inspect() { // 1 <---- 打开箱子看看里面有啥
+    case .pending:	// 2 <---- 是挂起状态的，note: 可是绑定了 handlers 对象
+    	// 3. Begin --------------------------------
+      box.inspect {
+        switch $0 {
+          case .pending(let handlers):
+          	handlers.append(to)
+          case .resolved(let value):
+          	to(value)
+        }
+      }
+    	// 3. End --------------------------------
+    case .resolved(let value): // 4 <---- 打开来发现是已经解决了 那么直接调用 to(value) 执行
+    	to(value)
+  }
+}
+```
+
+简单的笔者都注释了，片段3是 `inspect` 以闭包方式开放给外部来操作箱子绑定的 `Sealant` 密封条，如果是 `.pending` 那么就将 `to` 操作暂时放入 `handlers` 中，否则直接执行，这个实际上等同于代码片段4。
+
+**疑问：**若是 `.pending` 状态下，仅仅是 `handlers.append(to)`，并未执行 `to()` 闭包，`Begin - End` 这段代码已经被保存到 `handlers` 数组中安排之后某个时机执行，而外部传入的  `body` 闭包，此刻**也被持有——但是未执行**，前面个时刻会取出 `EmptyBox` 中的 `Sealant` 密封条，它有两种状态：`case pending(Handlers<R>) 和 case resolved(R)`。
+
+```swift
+func tap(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ body: @escaping(Result<T>) -> Void) -> Promise<T> {
+  return Promise { seal in   // 1. <---- seal 是一个 resolver
+   		pipe { // <---------------- Begin ----------------
+     			result in 
+        			// <-----2 注意这里我们又构建了一个异步操作！
+        			// 执行到这里 说明此刻是 .resolved 状态，取出了里面的值 Result 类型
+        			// 调用持有的 body 闭包，然后 resolver 修改 box 的密封的结果值
+        			on.async(flags: flags) {
+             		  body(result)
+              		seal.resolve(result)
+         			}
+        			// <------2 End
+      		}// <---------------- End ----------------
+   }
+}
+```
+
+> 看到这里，其实我对 Sealant 和 Result 还是有点迷糊，光看源码会将两者混起来，我知道 Box 要有一个密封条，要么是挂起状态，要么就是解决了的状态。如果是挂起，那么就把操作加入到 pending 绑定的handlers 中；如果是解决，就把Result类型的结果值绑定到 `.resolved` 枚举中。而这个操作独立出一个 Resolver 来看这件事。
+>
+> ```swift
+> enum Sealant<R> {
+>     case pending(Handlers<R>)
+>     case resolved(R)
+> }
+> 
+> public enum Result<T> {
+>     case fulfilled(T)
+>     case rejected(Error)
+> }
+> ```
 
 
 
+将 Promise 的链式传递值给断掉！官方解释：“a new promise chained off this promise but with its value discarded.”
 
+```swift
+func asVoid() -> Promise<Void> {
+  return map(on: nil) { _ in }
+}
+```
 
+`Thenable` 对 `Sequence` 类型做了一些扩展：
 
+* `mapValues`
+* `flatMapValues`
+* `compactMapValues`
+* `thenMap`
+* `thenFlatMap`
+* `filterValues`
+
+`Thenable` 对 `Collection` 类型做的扩展：
+
+* `firstValue`
+* `lastValue`
 
 
 
