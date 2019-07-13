@@ -485,17 +485,176 @@ func asVoid() -> Promise<Void> {
 * `firstValue`
 * `lastValue`
 
+### Promise 「我对你的承诺」
 
+> Promise 「我对你的承诺」，终将有果，或兑现，或拒绝，无论好坏，**我都轻轻地放入箱中**；
+>
+> 对你的承诺不限次数，无法拒绝；每个请求都给与承诺，**一个接一个**；并不是每个承诺都能被兑现，所以我随机应变，下一个承诺我会随之改变，一切只为了你。
 
+Promise 类会持有一个 Box 存放或好或坏的结果，遵循 `Thenable` 协议让承诺串起来进行履行。
 
+```swift
+public final class Promise<T>: Thenable, CatchMixin {
+    let box: Box<Result<T>>
 
+    fileprivate init(box: SealedBox<Result<T>>) {
+        self.box = box
+    }
+		
+    public init(resolver body: (Resolver<T>) throws -> Void) {
+        box = EmptyBox()
+        let resolver = Resolver(box)
+        do {
+            try body(resolver)
+        } catch {
+            resolver.reject(error)
+        }
+    }
+  	//....
+}
+```
 
+`Resolver` 不关心承诺的具体内容是什么，不关心你是如何去尝试兑现这个承诺的，它只是机械的将你尝试兑现承诺的结果 `Result<T>` 写入到它持有的 Box 中，`fulfill` 兑现了，`reject` 就是拒绝了，回顾下代码：
 
+```swift
+/// Fulfills the promise with the provided value
+func fulfill(_ value: T) {
+  box.seal(.fulfilled(value))
+}
 
+/// Rejects the promise with the provided error
+func reject(_ error: Error) {
+  box.seal(.rejected(error))
+}
+```
 
+当然 `Resolver` 还提供了其他便利方法，但是归根结底都是调用上述两个方法，或者直接操作 box 实例塞东西。而 promise 承诺在完成之时（成功or失败）都需要将其结果写入到box中，这部分职责划分给了 Resolver。
 
+接着来说下 Promise 对 `Thenable` 协议中的 `pipe` 方法的实现：
 
+```swift
+public func pipe(to: @escaping(Result<T>) -> Void) {
+  switch box.inspect() {
+    case .pending:
+    box.inspect {
+      switch $0 {
+        case .pending(let handlers):
+        handlers.append(to)
+        case .resolved(let value):
+        to(value)
+      }
+    }
+    case .resolved(let value):
+    to(value)
+  }
+}
+```
 
+1. 拿到密封箱，此刻忍不住想要看看 “密封” 情况（`enum Sealant`）：`.pending(Handlers<R>)` 或是 `.resolved(R)`；
+2. IF `.pending`，说明此刻的箱子还“开口”状态，我们的密封条绑定的 `handlers` 中还有未执行的操作闭包，没办法，我们只能将 `to` 闭包暂时也 `append` 到密封条中的 `handlers` 的 `body` 数组；
+3. `body.inspect{}` 闭包中对 `.resolved` 处理涉及到 barrier 问题，正常想法是既然进入到这里应该状态就是 `.pending`，但实际上可能多线程情况下不是哦。<—— 这里还是存疑下；
+4. `.resolved` 处理，这个没有问题
+
+Promise 提供了 `wait` 方法，会阻塞当前线程，所以最好不用在 `main` 线程中使用。
+
+```swift
+func wait() throws -> T {
+
+  if Thread.isMainThread {
+    conf.logHandler(LogEvent.waitOnMainThread)
+  }
+
+  var result = self.result
+
+  if result == nil {
+    let group = DispatchGroup()
+    group.enter()
+    pipe { result = $0; group.leave() }
+    group.wait()
+  }
+
+  switch result! {
+    case .rejected(let error):
+    throw error
+    case .fulfilled(let value):
+    return value
+  }
+}
+```
+
+> Promise 的代码基本上就是这些，至此我还是一脸懵逼，承诺的具体内容？在哪里被调用？这些我似乎都没注意到，看来只能继续源码看下去。注意到 Feature 文件夹，即「主要功能」，这个似乎有点料，打开文件夹赫然入目5个文件，分别是：`hang`， `after`，`firstly`，`race` 和 `when`，几个函数实现都寥寥几行，但是扮演着至关重要的角色，下面逐一学习。
+
+使用 `firstly` 函数是明智的选择，提高代码可读性。当然你也可以不使用，中规中矩地先实例化一个 Promise 对象，然后开始你的表演。函数代码真的寥寥几行：
+
+```swift
+public func firstly<U: Thenable>(execute body: () throws -> U) -> Promise<U.T> {
+    do {
+        let rp = Promise<U.T>(.pending) //1
+        try body().pipe(to: rp.box.seal) //2
+        return rp
+    } catch {
+        return Promise(error: error)
+    }
+}
+```
+
+1. 代码片段1中的 Promise 构造方法实例化了一个空箱，而这里的 `.pending` 并非是 `Sealant` 密封条枚举值。
+
+   ```swift
+   init(_: PMKUnambiguousInitializer) {
+       box = EmptyBox()
+   }
+   ```
+
+2. 代码片段2中的 `body()` 返回的是一个 `Thenable` 对象；调用  `pipe` 方法，它的类型是 `@escaping (Result<T>) -> Void`，而 `rp.box.seal` 函数的类型为 `func seal(_ value: T) `，省略了 `Void` 返回值，回归下 `EmptyBox` 的 `seal` 方法以及 `Promise` 的 `pipe` 方法：
+
+   ```swift
+   /// Promise.swift file
+   public func pipe(to: @escaping(Result<T>) -> Void) {
+     switch box.inspect() {
+       case .pending:
+       box.inspect {
+         switch $0 {
+           case .pending(let handlers):
+           handlers.append(to)
+           case .resolved(let value):
+           to(value)
+         }
+       }
+       case .resolved(let value):
+       to(value)
+     }
+   }
+   
+   /// Box.swift file
+   override func seal(_ value: T) {
+     var handlers: Handlers<T>!
+     barrier.sync(flags: .barrier) {
+       guard case .pending(let _handlers) = self.sealant else {
+         return  // already fulfilled!
+       }
+       handlers = _handlers
+       self.sealant = .resolved(value)
+     }
+   
+     if let handlers = handlers {
+       handlers.bodies.forEach{ $0(value) }
+     }
+   
+   }
+   ```
+
+   暂时不看 `handlers.append` 那段，可以看到 `body().pipe(to: rp.box.seal)` 这段代码应该就是将上一个 `body()` 生成的承诺值传递到新实例化出来的 `rp` 对象的box中，但是这里的调用有点让人一时无法理解，尽管函数类型都匹配上了，但是居然修改了 rp.box 的值，其实转念一想，调用这个方法时候，应该像oc那样第一、二个是隐藏参数 `self` 和 `_cmd`。如果让我这个新手来写应该是这样的：
+
+   ```swift
+   try body().pipe(to: { (result) in
+        rp.box.seal(result)
+   })
+   ```
+
+   然后转念一想swift貌似提供了语法糖，只传递函数指针就可以啦，觉得“奇怪”可能是因为这里传递的是实例对象的方法指针，而非之前经常传递 sort，map，filter等一些函数指针。
+
+ 
 
 
 
