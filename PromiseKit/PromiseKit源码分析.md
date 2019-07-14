@@ -485,7 +485,7 @@ func asVoid() -> Promise<Void> {
 * `firstValue`
 * `lastValue`
 
-### Promise 「我对你的承诺」
+### `Promise` 「我对你的承诺」
 
 > Promise 「我对你的承诺」，终将有果，或兑现，或拒绝，无论好坏，**我都轻轻地放入箱中**；
 >
@@ -654,9 +654,243 @@ public func firstly<U: Thenable>(execute body: () throws -> U) -> Promise<U.T> {
 
    然后转念一想swift貌似提供了语法糖，只传递函数指针就可以啦，觉得“奇怪”可能是因为这里传递的是实例对象的方法指针，而非之前经常传递 sort，map，filter等一些函数指针。
 
- 
+ `race`  方法，这里有个技巧就是不定参传递的使用，`race(promise1, promise2, promise3)`，会转成数组传递`[U]` ：
 
+```swift
+public func race<U: Thenable>(_ thenables: U...) -> Promise<U.T> {
+    return _race(thenables)
+}
 
+private func _race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
+    let rp = Promise<U.T>(.pending)
+    for thenable in thenables {
+        thenable.pipe(to: rp.box.seal)
+    }
+    return rp
+}
+```
+
+源码注解说"Waits for one promise to resolve，The promise that resolves first"，但是上面代码却是以 `for-in` 实现方式，似乎也没有第一个承诺完成了就退出的操作，按照我的理解不应该是后面的会覆盖前面的吗？
+
+`when` 方法的使用场景是，等待多个 promise 完成时，继续下面的工作。就像这样：
+
+```swift
+when(fulfilled: promise1, promise2).then { results in
+     //…
+ }.catch { error in
+     switch error {
+     case URLError.notConnectedToInternet:
+         //…
+     case CLError.denied:
+         //…
+     }
+ }
+```
+
+`when` 方法的实现：
+
+```swift
+private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
+    var countdown = thenables.count // 1. promise的个数
+    guard countdown > 0 else {
+        return .value(Void())
+    }
+
+    let rp = Promise<Void>(.pending) // 2. 实例化一个promise对象 内部box封存状态是 .pending的
+	
+  	// 3 借助 Swift 提供的 Progress 类，监控任务完成的进度，设置属性 不允许取消和暂停
+    let progress = Progress(totalUnitCount: Int64(thenables.count))
+    progress.isCancellable = false
+    progress.isPausable = false
+		
+  	// 4 GCD自定义一个并发队列
+    let barrier = DispatchQueue(label: "org.promisekit.barrier.when", attributes: .concurrent)
+		
+  	// 5 遍历传入的所有 promise 对象，循环调用 promise.pipe 方法
+    for promise in thenables {
+      	// promise 通过 pipe 传递
+        promise.pipe { result in
+            // 并发队列采用同步的方式处理 result 结果值
+            // 这里sync操作有点骚，尽管 barrier 是个并发队列
+            // 但是sync一搞，不是还是串行执行吗？
+            barrier.sync(flags: .barrier) {
+                switch result {
+                case .rejected(let error):
+                    if rp.isPending {
+                        progress.completedUnitCount = progress.totalUnitCount
+                        rp.box.seal(.rejected(error))
+                    }
+                case .fulfilled:
+                    guard rp.isPending else { return }
+                    progress.completedUnitCount += 1
+                    countdown -= 1
+                    if countdown == 0 {
+                        rp.box.seal(.fulfilled(()))
+                    }
+                }
+            }
+        }
+    }
+
+    return rp
+}
+```
+
+###Promise 入门实践前瞻
+
+[官方文档](https://github.com/mxcl/PromiseKit/blob/master/Documentation/GettingStarted.md)提供了如何集成 PromiseKit 框架，以及入门教程，以官方demo为例，下面是promiseKit使用方式，对比之前嵌套的异步写法，差距还是蛮明显的。
+
+```swift
+// promise 写法
+firstly {
+    login()
+}.then { creds in
+    fetch(avatar: creds.user)
+}.done { image in
+    self.imageView = image
+}
+
+// 常规异步操作写法
+login { creds, error in
+    if let creds = creds {
+        fetch(avatar: creds.user) { image, error in
+            if let image = image {
+                self.imageView = image
+            }
+        }
+    }
+}
+```
+
+当然想要以方式一写代码，如果还是按照原来的思想写异步自然是不可能的了，必须按照Promise的制定的协议来写。比如 `login()` 方法，新、旧对比：
+
+```swift
+func login() -> Promise<Creds>
+    
+// Compared with:
+func login(completion: (Creds?, Error?) -> Void)
+```
+
+> 没有所谓的 completion 闭包，那是异步才有的玩样！我们要返回的是 Promise，Thenable 万岁！有了它要啥 complete，直接 then 就完事了。关于 login 方法怎么实现，内部登陆流程应该还是不变的，关键是返回值变了。伪代码先写一波。
+
+```swift
+func login() -> Promise<Creds>{
+  	// 正常登陆流程，可能就是一个https post请求
+  	LoginManager.login(username, password) {
+        // 登陆成功 保存信息 然后返回
+      	return Promise(creds)
+    }
+   
+    // But.... 这里返回啥呢？？？
+}
+```
+
+是的，写伪代码时候遇到了这个问题，LoginManager 单例会异步执行 login 方法进行post请求，然后可能会有一个 successBlock 和一个 failedBlock，闭包里面我们会返回一个 Promise 实例。
+
+**问题是：login 方法最后我们应该返回啥呢？这里必须得搞清楚，但先继续往下学习。**
+
+关于 `catch` 方法是捕获在链式调用中出现的异常和错误，同样对比下promise和旧写法的区别：
+
+```swift
+firstly {
+    login()
+}.then { creds in
+    fetch(avatar: creds.user)
+}.done { image in
+    self.imageView = image
+}.catch {
+    // 链式中所有的错误和异常都会在这里
+  	// 这样会不会显得有点乱？
+}
+
+// 旧写法
+func handle(error: Error) {
+    //…
+}
+
+login { creds, error in
+    guard let creds = creds else { return handle(error: error!) }
+    fetch(avatar: creds.user) { image, error in
+        guard let image = image else { return handle(error: error!) }
+        self.imageView.image = image
+    }
+}
+```
+
+`ensure` 方法：
+
+```swift
+firstly {
+    UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    return login()
+}.then {
+    fetch(avatar: $0.user)
+}.done {
+    self.imageView = $0
+}.ensure {
+    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+}.catch {
+    //…
+}
+
+// 旧写法
+UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
+func handle(error: Error) {
+    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    //…
+}
+
+login { creds, error in
+    guard let creds = creds else { return handle(error: error!) }
+    fetch(avatar: creds.user) { image, error in
+        guard let image = image else { return handle(error: error!) }
+        self.imageView.image = image
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    }
+}
+```
+
+`when` 方法上面说了是等待所有 promise 完成了才执行后续的操作：
+
+```swift
+// 之前的嵌套方法
+operation1 { result1 in
+    operation2 { result2 in
+        finish(result1, result2)
+    }
+}
+
+// 或者用gcd group
+var result1: …!
+var result2: …!
+let group = DispatchGroup()
+group.enter()
+operation1 {
+    result1 = $0
+    group.leave()
+}
+group.enter()
+operation2 {
+    result2 = $0
+    group.leave()
+}
+group.notify(queue: .main) {
+    finish(result1, result2)
+}
+```
+
+而使用 promise 的 `when` 非常的简便、易懂：
+
+```swift
+firstly {
+    when(fulfilled: operation1(), operation2())
+}.done { result1, result2 in
+    //…
+}
+```
+
+> 小结：Promise 仅仅只是一个脚手架！想要使用的话你必须自己实现 Promise 制定的协议，起码你得返回一个 Thenable 实例；当然 PromiseKit 提供了一系列的 Extension ，扩展里面帮你写好了串联的那一层，所以用起来应该也不难。
 
 
 
